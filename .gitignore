@@ -1,0 +1,3 @@
+*.crt
+.env
+/node_modules
