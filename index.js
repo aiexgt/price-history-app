@@ -2,6 +2,8 @@ const { Client } = require("pg");
 const fetch = require("node-fetch");
 const dotenv = require("dotenv");
 const cheerio = require('cheerio');
+const cron = require('node-cron'); 
+
 dotenv.config();
 
 const EXTERNAL_API_ENDPOINT = process.env.EXTERNAL_API_ENDPOINT;
@@ -12,7 +14,7 @@ main = async (args) => {
 
   if (!CONNECTION_STRING) {
     console.error("ERROR: Missing DB_CONNECTION_STRING environment variable.");
-    return { statusCode: 500, body: "Missing connection string." };
+    return;
   }
 
   console.log("Connecting to the database...");
@@ -97,8 +99,11 @@ fetchExternalData = async (slug) => {
     try {
         productData = JSON.parse(jsonLdScript);
     } catch (e) {
-        console.error("Failed to parse JSON-LD:", e);
         throw new Error("Invalid JSON-LD format.");
+    }
+
+    if (!productData.offers || productData.offers.length === 0) {
+        throw new Error("Product data offers block not found or empty.");
     }
 
     const price = parseFloat(productData.offers[0].price); 
@@ -107,4 +112,14 @@ fetchExternalData = async (slug) => {
     return { price, sku };
 }
 
-main();
+
+cron.schedule('0 0 7 * * *', async () => {
+    console.log('--- CRON JOB INICIADO ---');
+    await main();
+    console.log('--- CRON JOB FINALIZADO ---');
+}, {
+    scheduled: true,
+    timezone: "America/Guatemala" 
+});
+
+console.log('Ingestion service started. The task is scheduled to run daily at 7:00 AM.');
