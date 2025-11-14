@@ -17,21 +17,17 @@ async function sendEmail(subject, htmlContent) {
     },
   });
 
-  const emailAddresses = process.env.EMAIL_TO.split(',').map(email => email.trim());
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: process.env.EMAIL_TO,
+    subject: subject,
+    html: htmlContent,
+  };
 
-  for (const email of emailAddresses) {
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_TO,
-      subject: subject,
-      html: htmlContent,
-    };
-
-    try {
-      await transporter.sendMail(mailOptions);
-    } catch (error) {
-      console.error("Error sending email:", error.message);
-    }
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Error sending email:", error.message);
   }
 }
 
