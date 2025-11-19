@@ -19,7 +19,7 @@ function createTable(products) {
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   ">
-    <thead style="background-color: #2563eb; color: white;">
+    <thead style="background-color: #aedf3c; color: black;">
       <tr>
         <th style="padding: 12px 10px; text-align: left;">Nombre</th>
         <th style="padding: 12px 10px; text-align: left;">SKU</th>
@@ -41,7 +41,7 @@ function createTable(products) {
 
     table += `
       <tr style="border-bottom: 1px solid #e5e7eb;">
-        <td style="padding: 10px 8px; color: #111827; font-weight: 600;"><a href="${process.env.EXTERNAL_API_ENDPOINT + p.slug}">${p.name}</a></td>
+        <td style="padding: 10px 8px; color: #111827; font-weight: 600;"><a href="${process.env.EXTERNAL_API_ENDPOINT + p.slug}/p">${p.name}</a></td>
         <td style="padding: 10px 8px; color: #111827; font-weight: 500;">${p.sku}</td>
         <td style="padding: 10px 8px; color: #111827;">${formatPrice(p.ultimo_precio)}</td>
         <td style="padding: 10px 8px; color: #374151;">${formatPrice(p.penultimo_precio)}</td>
