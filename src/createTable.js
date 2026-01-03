@@ -1,5 +1,5 @@
-// src/createTable.js
-function createTable(products) {
+// src/createTable.js (puedes renombrar el archivo a createEmail.js)
+function createTable(product) {
   const formatPrice = (value) =>
     value != null
       ? new Intl.NumberFormat("es-GT", {
@@ -9,57 +9,50 @@ function createTable(products) {
         }).format(value)
       : "-";
 
-  let table = `
-  <table style="
-    width: 100%;
-    border-collapse: collapse;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #ffffff;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  ">
-    <thead style="background-color: #2563eb; color: white;">
-      <tr>
-        <th style="padding: 12px 10px; text-align: left;">Nombre</th>
-        <th style="padding: 12px 10px; text-align: left;">SKU</th>
-        <th style="padding: 12px 10px; text-align: left;">Último Precio</th>
-        <th style="padding: 12px 10px; text-align: left;">Penúltimo Precio</th>
-        <th style="padding: 12px 10px; text-align: left;">Diferencia vs Penúltimo</th>
-        <th style="padding: 12px 10px; text-align: left;">Precio Máximo</th>
-        <th style="padding: 12px 10px; text-align: left;">Precio Mínimo</th>
-      </tr>
-    </thead>
-    <tbody>
+  // Buscamos el producto que disparó la alerta de compra
+  const p = product;
+
+  return `
+    <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
+      
+      ${p.canBuy ? `
+        <div style="text-align: center; background-color: #16a34a; color: white; padding: 40px 20px; border-radius: 15px; margin-bottom: 30px;">
+          <h1 style="margin: 0; font-size: 42px; letter-spacing: 2px;">¡YA SE PUEDE COMPRAR!</h1>
+        </div>
+      ` : ''}
+
+      <div style="background-color: #f3f4f6; padding: 25px; border-radius: 12px; border: 1px solid #e5e7eb;">
+        <h2 style="margin-top: 0; color: #111827; border-bottom: 2px solid #2563eb; padding-bottom: 10px;">
+          Detalles del Producto
+        </h2>
+        
+        <p style="font-size: 18px; margin: 15px 0;">
+          <strong style="color: #4b5563;">Nombre:</strong><br>
+          <span style="font-weight: 600; color: #111827;">${p.name}</span>
+        </p>
+
+        <p style="font-size: 18px; margin: 15px 0;">
+          <strong style="color: #4b5563;">SKU:</strong><br>
+          <span style="font-family: monospace; background: #ddd; padding: 2px 5px; border-radius: 4px;">${p.sku}</span>
+        </p>
+
+        <p style="font-size: 24px; margin: 20px 0; color: #1d4ed8; font-weight: bold;">
+          Precio: ${formatPrice(p.price)}
+        </p>
+
+        <div style="text-align: center; margin-top: 30px;">
+          <a href="${process.env.EXTERNAL_API_ENDPOINT}precios_stock_detallado/${p.slug}" 
+             style="background-color: #2563eb; color: white; padding: 15px 30px; text-decoration: none; font-size: 18px; font-weight: bold; border-radius: 8px; display: inline-block;">
+             VER PRODUCTO EN TIENDA
+          </a>
+        </div>
+      </div>
+
+      <p style="font-size: 12px; color: #9ca3af; text-align: center; margin-top: 20px;">
+        Este es un aviso automático de disponibilidad de stock.
+      </p>
+    </div>
   `;
-
-  products.forEach((p) => {
-    const diff = parseFloat(p.diferencia_vs_penultimo || 0);
-    const diffColor =
-      diff < 0 ? "#16a34a" : diff > 0 ? "#dc2626" : "#6b7280";
-    const diffSymbol = diff > 0 ? "▲" : diff < 0 ? "▼" : "•";
-
-    table += `
-      <tr style="border-bottom: 1px solid #e5e7eb;">
-        <td style="padding: 10px 8px; color: #111827; font-weight: 600;"><a href="${process.env.EXTERNAL_API_ENDPOINT + p.slug}">${p.name}</a></td>
-        <td style="padding: 10px 8px; color: #111827; font-weight: 500;">${p.sku}</td>
-        <td style="padding: 10px 8px; color: #111827;">${formatPrice(p.ultimo_precio)}</td>
-        <td style="padding: 10px 8px; color: #374151;">${formatPrice(p.penultimo_precio)}</td>
-        <td style="padding: 10px 8px; color: ${diffColor}; font-weight: 600;">
-          ${diffSymbol} ${formatPrice(Math.abs(diff))}
-        </td>
-        <td style="padding: 10px 8px; color: #1d4ed8;">${formatPrice(p.precio_maximo)}</td>
-        <td style="padding: 10px 8px; color: #047857;">${formatPrice(p.precio_minimo)}</td>
-      </tr>
-    `;
-  });
-
-  table += `
-    </tbody>
-  </table>
-  `;
-
-  return table;
 }
 
 module.exports = { createTable };
