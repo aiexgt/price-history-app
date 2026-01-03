@@ -22,7 +22,10 @@ async function main() {
 
         if (apiResponse.canBuy === true) {
           const html = createTable(apiResponse);
-        await sendEmail(apiResponse.slug + ' YA SE PUEDE COMPRAR', html);
+          console.log(`[IN STOCK] ${product.slug} can be purchased! Sending email...`);
+          await sendEmail(apiResponse.slug + ' YA SE PUEDE COMPRAR', html);
+        } else {
+          console.log(`[NO STOCK] ${product.slug} cannot be purchased.`);
         }
 
         await delay(2000);
